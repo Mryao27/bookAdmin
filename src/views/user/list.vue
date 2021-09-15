@@ -8,7 +8,8 @@
         size="mini"
         type="success"
         icon="el-icon-search"
-      >搜索</el-button>
+        >搜索</el-button
+      >
       <el-button
         class="filter-item"
         size="mini"
@@ -19,38 +20,41 @@
         新增
       </el-button>
     </div>
-    <el-table size="small" style="width: 100%" :data="userData" border>
+    <el-table size="small" style="width: 100%" :data="data" border>
       <el-table-column label="用户名" prop="username" />
       <el-table-column label="电话" prop="phone" />
       <el-table-column label="邮箱" prop="email" />
-      <el-table-column label="头像" prop="avatar">
+      <el-table-column label="头像" prop="avatar" >
         <template slot-scope="scope">
-          <img :src="scope.row.avatar" alt="" min-width="70" height="70">
+          <img v-show="scope.row.avatar" :src="scope.row.avatar" alt="" min-width="70" height="70" />
         </template>
       </el-table-column>
       <el-table-column label="创建时间" prop="createTime" />
       <el-table-column label="更新时间" prop="updateTime" />
       <el-table-column label="操作" align="center">
-        <template slot-scope="scope">
+        <template slot-scope="scope" >
           <el-button
             type="primary"
             size="mini"
             icon="el-icon-edit"
             @click="edit(scope.row)"
+            v-show="scope.row.id"
           />
-          <el-popover :ref="scope.row.id" width="180">
+          <el-popover :ref="scope.row.id" width="180" v-show="scope.row.id">
             <p>确定删除本条数据吗？</p>
             <div style="text-align: right; margin: 0">
               <el-button
                 size="mini"
                 type="text"
                 @click="$refs[scope.row.id].doClose()"
-              >取消</el-button>
+                >取消</el-button
+              >
               <el-button
                 type="primary"
                 size="mini"
                 @click="subDelete(scope.row.id)"
-              >确定</el-button>
+                >确定</el-button
+              >
             </div>
             <el-button
               slot="reference"
@@ -62,20 +66,40 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页组件 -->
+    <el-pagination
+      :total="total"
+      style="margin-top: 8px"
+      layout="total, prev, pager, next, sizes"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+      :current-page="page"
+      :page-size="5"
+      :page-sizes="[5, 10, 20, 50]"
+    ></el-pagination>
   </div>
 </template>
 
 <script>
-import { getUsers, saveUser } from '@/api/user'
-import eForm from './form'
-import initData from '@/mixins/initData'
+import { getUsers } from "@/api/user";
+import eForm from "./form";
+import initData from "@/mixins/initData";
 export default {
-  name: 'UserList',
+  name: "UserList",
   components: { eForm },
   mixins: [initData],
   data() {
     return {
-      userData: []
+      userData: [
+        {
+          username: "",
+          phone: "",
+          email: "",
+          avatar: "",
+          createTime: "",
+          updateTime: "",
+        },
+      ],
       // userData: [
       //   {
       //     username: "yjw",
@@ -86,65 +110,71 @@ export default {
       //     create_time: "2020-09-10 09:42:04",
       //   },
       // ],
-    }
+    };
   },
   created() {
-    this.getUserList()
-    // this.$nextTick(() => {
-    //   this.getUserList()
-    // })
-    console.log(this.userData)
+    console.log("this.query:", this.query);
+    this.$nextTick(() => {
+      this.init()
+    })
   },
   methods: {
+    beforeInit() {
+      this.url = "user/list";
+      const sort = "id,desc";
+      const { keyword } = this.query;
+      this.params = { page: this.page, size: this.size, sort: sort, keyword };
+      return true;
+    },
     async getUserList() {
-      const ret = await getUsers()
-      console.log(ret)
+      const ret = await getUsers();
+      console.log(ret);
       if (ret.iRet !== 0) {
-        console.log('error')
-        return
+        console.log("error");
+        return;
       }
-      this.userData = ret.data
+      this.userData = ret.data;
     },
     add() {
-      this.isAdd = true
-      this.$refs.form.dialog = true
+      this.isAdd = true;
+      this.$refs.form.dialog = true;
     },
     edit(data) {
-      console.log(data)
-      this.isAdd = false
-      const that = this.$refs.form
-      that.form = Object.assign({}, data)
-      that.dialog = true
+      console.log(data);
+      this.isAdd = false;
+      const that = this.$refs.form;
+      that.form = Object.assign({}, data);
+      that.dialog = true;
     },
-    subDelete(id) {
-      this.delLoading = true
-      del(id)
-        .then((res) => {
-          this.delLoading = false
-          this.$refs[id].doClose()
-          this.dleChangePage()
-          this.init()
-          this.$notify({
-            title: '删除成功',
-            type: 'success',
-            duration: 2500
-          })
-        })
-        .catch((err) => {
-          this.delLoading = false
-          this.$refs[id].doClose()
-          console.log(err.response.data.message)
-        })
-    }
-  }
-}
+    // subDelete(id) {
+    //   this.delLoading = true;
+    //   del(id)
+    //     .then((res) => {
+    //       this.delLoading = false;
+    //       this.$refs[id].doClose();
+    //       this.dleChangePage();
+    //       this.init();
+    //       this.$notify({
+    //         title: "删除成功",
+    //         type: "success",
+    //         duration: 2500,
+    //       });
+    //     })
+    //     .catch((err) => {
+    //       this.delLoading = false;
+    //       this.$refs[id].doClose();
+    //       console.log(err.response.data.message);
+    //     });
+    // },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 .user-list {
   padding: 20px;
-  .head-container{
-    .filter-item{
+  .head-container {
+    .filter-item {
       margin-bottom: 10px;
     }
   }

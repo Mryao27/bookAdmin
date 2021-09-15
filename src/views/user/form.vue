@@ -131,7 +131,6 @@ export default {
           })
           this.loading = false
           this.$parent.init()
-          this.$parent.getUserList()
         })
         .catch((err) => {
           this.loading = false
@@ -149,7 +148,6 @@ export default {
           })
           this.loading = false
           this.$parent.init()
-          this.$parent.getUserList()
         })
         .catch((err) => {
           this.loading = false
