@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { getUsers } from "@/api/user";
+import { getUsers, del } from "@/api/user";
 import eForm from "./form";
 import initData from "@/mixins/initData";
 export default {
@@ -146,26 +146,28 @@ export default {
       that.form = Object.assign({}, data);
       that.dialog = true;
     },
-    // subDelete(id) {
-    //   this.delLoading = true;
-    //   del(id)
-    //     .then((res) => {
-    //       this.delLoading = false;
-    //       this.$refs[id].doClose();
-    //       this.dleChangePage();
-    //       this.init();
-    //       this.$notify({
-    //         title: "删除成功",
-    //         type: "success",
-    //         duration: 2500,
-    //       });
-    //     })
-    //     .catch((err) => {
-    //       this.delLoading = false;
-    //       this.$refs[id].doClose();
-    //       console.log(err.response.data.message);
-    //     });
-    // },
+    subDelete(id) {
+      this.delLoading = true;
+      console.log('id是=====',id);
+      
+      del(id)
+        .then((res) => {
+          this.delLoading = false;
+          this.$refs[id].doClose();
+          this.dleChangePage();
+          this.init();
+          this.$notify({
+            title: "删除成功",
+            type: "success",
+            duration: 2500,
+          });
+        })
+        .catch((err) => {
+          this.delLoading = false;
+          this.$refs[id].doClose();
+          console.log(err);
+        });
+    },
   },
 };
 </script>

@@ -20,9 +20,9 @@ export default {
       if (!await this.beforeInit()) {
         return
       }
-      return new Promise((resolve,reject) => {
-        this.loading =true;
-        return new Promise((resolve,reject) => {
+      return new Promise((resolve, reject) => {
+        this.loading = true;
+        return new Promise((resolve, reject) => {
           initData(this.url, this.params).then(res => {
             console.log(res);
             this.total = res.total;
@@ -51,6 +51,14 @@ export default {
       console.log(`当前页: ${e}`);
       this.page = e;
       this.init();
+    },
+    dleChangePage(size) {
+      if (size === undefined) {
+        size = 1
+      }
+      if (this.data.length === size && this.page !== 1) {
+        this.page = this.page - 1
+      }
     },
   }
 }

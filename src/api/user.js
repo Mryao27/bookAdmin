@@ -38,3 +38,11 @@ export function save(data) {
   })
 }
 
+export function del(id) {
+  return request({
+    url: '/user/deleteUser',
+    method: 'post',
+    data: { id }
+  })
+}
+
