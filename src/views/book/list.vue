@@ -3,6 +3,7 @@
     <div class="search">
       <el-input placeholder="请输入书名" />
     </div>
+    <h3 style="text-align:center">静态数据：</h3>
     <el-table size="small" style="width: 100%" :data="bookData" border>
       <el-table-column label="书名" prop="name" />
       <el-table-column label="作者" prop="author" />

@@ -7,7 +7,8 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  user: {}
 }
 
 const mutations = {
@@ -25,7 +26,10 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
-  }
+  },
+  SET_USER: (state, user) => {
+    state.user = user
+  },
 }
 
 const actions = {
@@ -35,6 +39,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
+        setUserInfo(data, commit)
         console.log(data)
         commit('SET_TOKEN', getToken())
         // setToken(data)
@@ -50,7 +55,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
         const { data } = response
-        // console.log(data)
+        setUserInfo(data, commit)
+        console.log('data::',data)
         if (!data) {
           reject('Verification failed, please Login again.')
         }
@@ -122,6 +128,16 @@ const actions = {
     // reset visited views and cached views
     dispatch('tagsView/delAllViews', null, { root: true })
   }
+}
+
+export const setUserInfo = (data, commit) => {
+  // 如果没有任何权限，则赋予一个默认的权限，避免请求死循环
+  // if (res.roles.length === 0) {
+  //   commit('SET_ROLES', ['ROLE_SYSTEM_DEFAULT'])
+  // } else {
+  //   commit('SET_ROLES', res.roles)
+  // }
+  commit('SET_USER', data)
 }
 
 export default {

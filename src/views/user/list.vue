@@ -2,12 +2,22 @@
   <div class="user-list">
     <e-form ref="form" :is-add="isAdd" />
     <div class="head-container">
-      <el-input placeholder="请输入用户名" style="width: 200px" />
+      <el-input
+        v-model="query.keyword"
+        clearable
+        @keyup.enter.native="toQuery"
+        placeholder="请输入用户名"
+        style="width: 200px"
+      />
+      <!-- <el-select v-model="enabled" placeholder="状态" class="filter-item" style="width: 150px" @change="toQuery">
+        <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+      </el-select> -->
       <el-button
         class="filter-item"
         size="mini"
         type="success"
         icon="el-icon-search"
+        @click.native="toQuery"
         >搜索</el-button
       >
       <el-button
@@ -24,15 +34,21 @@
       <el-table-column label="用户名" prop="username" />
       <el-table-column label="电话" prop="phone" />
       <el-table-column label="邮箱" prop="email" />
-      <el-table-column label="头像" prop="avatar" >
+      <el-table-column label="头像" prop="avatar">
         <template slot-scope="scope">
-          <img v-show="scope.row.avatar" :src="scope.row.avatar" alt="" min-width="70" height="70" />
+          <img
+            v-show="scope.row.avatar"
+            :src="scope.row.avatar"
+            alt=""
+            min-width="70"
+            height="70"
+          />
         </template>
       </el-table-column>
       <el-table-column label="创建时间" prop="createTime" />
       <el-table-column label="更新时间" prop="updateTime" />
       <el-table-column label="操作" align="center">
-        <template slot-scope="scope" >
+        <template slot-scope="scope">
           <el-button
             type="primary"
             size="mini"
@@ -81,7 +97,7 @@
 </template>
 
 <script>
-import { getUsers, del } from "@/api/user";
+import { del } from "@/api/user";
 import eForm from "./form";
 import initData from "@/mixins/initData";
 export default {
@@ -112,11 +128,10 @@ export default {
       // ],
     };
   },
-  created() {
-    console.log("this.query:", this.query);
+  async created() {
     this.$nextTick(() => {
-      this.init()
-    })
+      this.init();
+    });
   },
   methods: {
     beforeInit() {
@@ -126,15 +141,15 @@ export default {
       this.params = { page: this.page, size: this.size, sort: sort, keyword };
       return true;
     },
-    async getUserList() {
-      const ret = await getUsers();
-      console.log(ret);
-      if (ret.iRet !== 0) {
-        console.log("error");
-        return;
-      }
-      this.userData = ret.data;
-    },
+    // async getUserList() {
+    //   const ret = await getUsers();
+    //   console.log(ret);
+    //   if (ret.iRet !== 0) {
+    //     console.log("error");
+    //     return;
+    //   }
+    //   this.userData = ret.data;
+    // },
     add() {
       this.isAdd = true;
       this.$refs.form.dialog = true;
@@ -148,8 +163,8 @@ export default {
     },
     subDelete(id) {
       this.delLoading = true;
-      console.log('id是=====',id);
-      
+      console.log("id是=====", id);
+
       del(id)
         .then((res) => {
           this.delLoading = false;

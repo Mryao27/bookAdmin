@@ -1,4 +1,5 @@
 import { initData } from '@/api/data'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data() {
@@ -12,21 +13,33 @@ export default {
       data: [],
       params: {},
       query: {},
-      time: 170
+      time: 170,
+      mySelf: []
     }
   },
+  computed: {
+    ...mapGetters([
+      'user'
+    ]),
+  },
   methods: {
+    ...mapActions({
+      getInfo:'user/getInfo'
+    }),
     async init() {
       if (!await this.beforeInit()) {
         return
       }
+      const vm =this
       return new Promise((resolve, reject) => {
         this.loading = true;
         return new Promise((resolve, reject) => {
           initData(this.url, this.params).then(res => {
-            console.log(res);
             this.total = res.total;
             this.data = res.list;
+            console.log(this.data);
+            console.log('this.user.id',this.user.id);
+            vm.getInfo()
             setTimeout(() => {
               this.loading = false;
             }, this.time)
@@ -60,5 +73,9 @@ export default {
         this.page = this.page - 1
       }
     },
-  }
+    toQuery() {
+      this.page = 1;
+      this.init();
+    }
+  },
 }

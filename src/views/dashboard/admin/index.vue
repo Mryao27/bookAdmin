@@ -1,6 +1,13 @@
 <template>
   <div class="dashboard-editor-container">
-    <h1>admin</h1>
+    <el-form v-if="user" ref="form" :model="user" label-width="80px">
+      <el-form-item label="用户名:">{{user.username}}</el-form-item>
+      <el-form-item label="手机号:">{{user.phone}}</el-form-item>
+      <el-form-item label="邮箱:">{{user.email}}</el-form-item>
+      <el-form-item>
+        <el-button disabled type="success">修改密码</el-button> <span class="red">(开发中...)</span>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -14,6 +21,7 @@ import BarChart from './components/BarChart'
 import TransactionTable from './components/TransactionTable'
 import TodoList from './components/TodoList'
 import BoxCard from './components/BoxCard'
+import { mapGetters } from 'vuex'
 
 const lineChartData = {
   newVisitis: {
@@ -47,6 +55,15 @@ export default {
     TodoList,
     BoxCard
   },
+  computed: {
+    ...mapGetters([
+      'user'
+    ]),
+  },
+  created(){
+    console.log('this.user',this.user);
+    
+  },
   data() {
     return {
       lineChartData: lineChartData.newVisitis
@@ -62,6 +79,9 @@ export default {
 
 <style lang="scss" scoped>
 .dashboard-editor-container {
+  .red{
+    color: red;
+  }
   padding: 32px;
   background-color: rgb(240, 242, 245);
   position: relative;
